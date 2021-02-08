@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}
+categories
+{% endblock title %}
+
+{% block head %}
+<style>
+    body{
+    background: -webkit-linear-gradient(left, #3931af,white);
+}
+</style>
+{% endblock head %}
+
+{% block body %}
+
+<hr>
+<div class="container-fluid mt-2" > 
+    <div class="col-lg-3 mx-auto">
+        <div class="list-group border rounded pt-3">
+          <h3><a href="/" class="list-group-item list-group-item-action"  style="color:navy; background-color: skyblue;">All Products</a> </h3>
+          {% for category in categories %}
+          <div class="list-group border rounded pt-3 mt-3"> 
+            <a href="/?category={{category.id}}"><img class="card-img-top" src="{{category.image.url}}" height="300" alt="ok">
+              <a href="/?category={{category.id}}"> <h4 class="list-group-item list-group-item-action" style="color:navy;background-color:skyblue;">{{category.name}}</h4></a>
+            </a> 
+            
+          </div>
+          {% endfor %}
+  <div class="row">
+    <!--all product-->
+
+    <div id='product' class="col-lg-12 mx-auto">
+      <p class="display-4 col-lg-5 mx-auto"  style="color:black;"><strong> &nbsp; CATEGORIES</strong></p>  
+      <hr>
+      <div class="row mx-auto">
+        {% for sub in sub_categories %}
+        <div class="card col-lg-4 mt-1" style="width: 18rem; background-color: skyblue;">
+          <h2 class="card-title mx-auto "><strong>{{sub.name}}</strong></h2>
+          <h2 class="card-title mx-auto "><strong>{{sub.category.id}}</strong></h2>
+          <a href="/?category={{category.id}}">
+              <img class="card-img-top" src="{{sub.image.url}}" height="400" alt="ok">
+              
+          </a>
+          <a href="/?sub={{sub.id}}"><p style="color: blue;">shop now</p></a>
+        </div>
+        <hr>
+        {% endfor %}
+        </div>
+    </div>
+  </div>
+</div>
+
+   
+{% endblock body %}

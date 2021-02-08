@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Home
+{% endblock title %}
+
+{% block head %}
+<style>
+    body{
+    background: -webkit-linear-gradient(left, #3931af, white);
+}
+</style>
+{% endblock head %}
+
+{% block body %}
+
+{% load cartviewer %}
+{% load currency_filter %}
+<!-- 
+  <div class="container-fluid col-lg-11 my-0 px-2 mt-1">
+  <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
+      <ol class="carousel-indicators">
+        <li data-target="#carouselExampleCaptions" data-slide-to="0" class="active"></li>
+        <li data-target="#carouselExampleCaptions" data-slide-to="1"></li>
+        <li data-target="#carouselExampleCaptions" data-slide-to="2"></li>
+      </ol>
+      <div class="carousel-inner">
+        <div class="carousel-item active" style="background: rgb(96, 72, 196); width: 1188px; display: block; z-index: 1; position: absolute; opacity: 1;">
+          <img src="static/images/a.jpg" class="d-block w-100" alt="..." height="550" width="1600">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>First slide label</h5>
+            <p>Nulla vitae elit libero, a pharetra augue mollis interdum.</p>
+          </div>
+        </div>
+        <div class="carousel-item" style="background: rgb(96, 72, 196); width: 1188px; display: block; z-index: 1; position: absolute; opacity: 1;">
+          <img src="static/images/3.jpg"  alt="..." height="550" width="1600">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>Second slide label</h5>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+          </div>
+        </div>
+        <div class="carousel-item" style="background: rgb(96, 72, 196); width: 1188px; display: block; z-index: 1; position: absolute; opacity: 1;">
+          <img src="static/images/4.jpg" alt="..." height="550" width="1600">
+          <div class="carousel-caption d-none d-md-block">
+            <h5>Third slide label</h5>
+            <p>Praesent commodo cursus magna, vel scelerisque nisl consectetur.</p>
+          </div>
+        </div>
+      </div>
+
+      
+      <a class="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
+        <i class="fa fa-angle-left"aria-hidden="true"></i>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carouselExampleCaptions" role="button" data-slide="next">
+        <i class="fa fa-angle-right"aria-hidden="true"></i>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+</div> 
+ 
+
+-->
+
+
+
+
+
+
+<!--uploads products-------------------------- -->
+
+<div class="container-fluid mt-2" > 
+  <div class="row">
+    <!--filter-->
+
+
+  <div class="col-lg-3 mx-auto">
+  <div class="list-group border rounded pt-3">
+    <h2><a href="/contact" class="list-group-item list-group-item-action"  style="color:navy; background-color: skyblue;"><strong>All Categories</strong> </a> </h2>
+    <hr>
+    <h3><a href="/" class="list-group-item list-group-item-action"  style="color:navy; background-color: skyblue;">All Products</a> </h3>
+    {% for category in categories %}
+    <div class="list-group border rounded pt-3 mt-3"> 
+      <a href="/?category={{category.id}}"><img class="card-img-top" src="{{category.image.url}}" height="300" alt="ok">
+        <a href="/?category={{category.id}}"> <h4 class="list-group-item list-group-item-action" style="color:navy;background-color:skyblue;">{{category.name}}</h4></a>
+      </a> 
+      
+    </div>
+    {% endfor %}
+
+
+
+
+  </div>
+  </div>
+  
+    <!--all product-->
+    <div id='product' class="col-lg-9 mx-auto">
+      <div class="row mx-auto">
+
+        {% for subcategory in subcategories %}
+        <div class="card col-lg-3 mt-1 ml-2" style="width: 10rem; background-color: skyblue;">
+          <h2 class="card-title mx-auto "><strong>{{subcategory.name}}</strong></h2>
+          <a href="/?subcategory={{subcategory.id}}">
+            <img class="card-img-top" src="{{subcategory.image.url}}" height="150" alt="ok"> 
+          </a>
+          <a href="/?subcategory={{subcategory.id}}"><p style="color: blue;">See More</p></a>
+        
+        </div>
+        {% endfor %}
+
+        {% for brand in brands %}
+          <div class="card col-lg-3 mt-1 ml-2" style="width: 18rem; background-color: skyblue;">
+            <h2 class="card-title mx-auto "><strong>{{brand.name}}</strong></h2>
+            <a href="/?brand={{brand.id}}">
+              <img class="card-img-top" src="{{brand.image.url}}" height="120" alt="ok"> 
+            </a>
+            <a href="/?brand={{brand.id}}"><p style="color: blue;">shop now</p></a>
+          </div>
+          {% endfor %}
+
+  
+        {% for product in products %} 
+
+        <div class="card mb-4 mr-3 ml-3" id="{{product.id}}" style="width: 15rem;background-color:skyblue;">
+            <img class="card-img-top" src="{{product.image.url}}" height="200" alt="ok">
+            <div class="card-body">
+              <p class="card-title col-lg-12"><strong>{{product.name}}</strong></p>
+              {% if product.Stock %}
+              <td><small class="badge badge-success"> In Stock</small></td>
+              {% else %}
+              <td><small class="badge badge-success">Out Of Stock</small></td>
+              {% endif %}
+              <br>
+              <p class="card-text" style="color: blue;">{{product.price|currency}}</p>
+              
+             <del> <h5 class="card-text" style="color: red;"><strong>{{product.discount|currency}}</strong></h5></del>
+              
+              <form method="GET" action="/profil_prp" class="form-inline my-2 my-lg-0">
+                <input hidden type="text" name='iqre' id="iqre" value="{{product.id}}">
+                <input type="submit" class="float-right btn  boarder form-control  btn-primary btn-md my-0 p" style="width: 15rem;background-color:blueviolet;" value="Quick View">
+              </form>
+
+
+    
+              
+            </div>
+
+            <div class="card-footer p-0 no-gutters">
+              {% if product.Stock %}
+              {% if product|is_in_cart:request.session.cart  %}
+              <div class="row no-gutters">
+                <form action="/#{{product.id}}" class="col-2" method="POST">
+                {% csrf_token %}
+                <input hidden type="text" name='remove' value="True">
+                <input type="submit" value="-" class=" btn btn-block btn-secondary">
+                <input hidden type="text" name='product' value="{{product.id}}">
+               
+              </form>
+              <div class="text-center col" style="background-color:skyblue;">Quantity={{product|quantity_count:request.session.cart}}</div>
+
+
+              <form action="/#{{product.id}}" class="col-2" method="POST">
+                {% csrf_token %}
+                <input hidden type="text" name='product' value="{{product.id}}">
+                <input type="submit" value="+" class=" btn btn-block btn-secondary">
+              </form>
+              </div>
+              {% else %}
+              <form action="/#{{product.id}}" method="POST" class="btn-block">
+                {% csrf_token %}
+                <input hidden type="text" name='product' value="{{product.id}}">
+                <input type="submit" class="float-right btn  boarder
+                form-control  btn-primary btn-md my-0 p" value="Add to Cart">
+              </form>
+              {% endif %}
+              {% endif %}
+
+           
+        </div>
+        </div>
+        {% endfor %}
+        </div>
+    </div>
+  </div>
+</div>
+{% endblock body %}

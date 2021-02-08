@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Orders
+{% endblock title %}
+
+{% block head %}
+<style>
+    body{
+    background: -webkit-linear-gradient(left, #3931af, #00c6ff);
+}
+</style>
+{% endblock head %}
+
+{% block body %}
+{% load cartviewer %}
+{% load currency_filter %}
+<div class="container"  style="background-color:#D0D3D4;">
+    <div class="border rounded p-4 m-4">
+      <p class="display-4 col-lg-6 mx-auto border rounded"  style="color:black;background-color: skyblue;" style="color: blue;"><strong>YOUR ORDERS<i class="fas fa-shipping-fast"></i></strong> </p>    
+      <div class="col-lg-3 mx-auto"> 
+        <a href="/" class="btn btn-primary cart-btn-transform m-3 mr-3" data-abc="true">continue shopping</a>
+      </div> 
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Sno.</th>
+                    <th>Image</th>
+                    <th>Products</th>
+                    <th>Date</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                    <th>Status</th>
+                    
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td>{{forloop.counter}}</td>
+                    <td>
+                        <img style="height:80px;" src="{{order.product.image.url}}" alt="" class="rounded-circle">
+                     </td>
+                     <td> 
+                      <form method="GET" action="/profil_prp" class="form-inline my-2 my-lg-0">
+                        <input hidden type="text" name='iqre' id="iqre" value="{{order.product.id}}">
+                        <input type="submit" class="float-right btn btn-block boarder rounded
+                        form-control" style="width: 15rem;background-color:skyblue;" value="{{order.product.name}}">
+                      </form>
+                    </td>
+                    <td>{{order.date}}</td>
+                    <td>{{order.price|currency}}</td>
+                    <td>{{order.quantity}}</td>
+                    <td>{{order.quantity|multiply:order.price|currency}}</td>
+
+
+                    {% if order.Pending != order.OnTheWay %}
+                    <td><small class="badge badge-success">PENDING</small></td>
+                    {% elif order.OnTheWay != order.Completed %}
+                    <td><small class="badge badge-success">ON THE WAY</small></td>
+                    {% elif order.Pending == order.Completed %}
+                    <td><small class="badge badge-success">COMPLETED</small></td>
+                    {% endif %}
+                    
+                </tr>
+                 {% endfor %}
+            </tbody>
+            
+        </table>
+        <hr>
+        
+        </div>
+</div>   
+
+{% endblock body %}

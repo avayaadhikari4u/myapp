@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}
+categories
+{% endblock title %}
+
+{% block head %}
+<style>
+    body{
+    background: -webkit-linear-gradient(left, #3931af,white);
+}
+</style>
+{% endblock head %}
+
+{% block body %}
+
+<hr>
+<div class="container-fluid mt-2" > 
+  <div class="row">
+    <!--all product-->
+    <div id='product' class="col-lg-12 mx-auto">
+      <p class="display-4 col-lg-5 mx-auto"  style="color:black;"><strong> &nbsp; CATEGORIES</strong></p>  
+      <hr>
+      <div class="row mx-auto">
+          {% for category in categories %} 
+        <div class="card col-lg-4 mt-1" style="width: 18rem; background-color: skyblue;">
+          <h2 class="card-title mx-auto "><strong>{{category.name}}</strong></h2>
+          <a href="/?category={{category.id}}">
+              <img class="card-img-top" src="{{category.image.url}}" height="400" alt="ok">
+              
+          </a>
+          <a href="/?category={{category.id}}"><p style="color: blue;">shop now</p></a>
+        </div>
+        <hr>
+        {% endfor %}
+        </div>
+    </div>
+  </div>
+</div>
+
+   
+{% endblock body %}

@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+
+{% block title %}
+Search 
+{% endblock title %}
+
+{% block head %}
+<style>
+    body{
+    background: -webkit-linear-gradient(left, #3931af, white);
+}
+</style>
+{% endblock head %}
+
+{% block body %}
+
+{% load cartviewer %}
+{% load currency_filter %}
+
+
+
+
+<!--uploads products-------------------------- -->
+
+<div class="container-fluid mt-3" style="color:red;"> 
+  <h2>Search results:</h2>
+  {% if products|length < 1 %}
+  <p>No search results</p>
+  Your search -  <b>{{query}}</b> - did not match any products.
+  <br>
+  <br>
+  Suggestions:
+  <ul>
+    <li>
+      Try different keywords.
+    </li>
+    <li>
+      Make sure that all words are spelled correctly.
+    </li>
+    <li>
+      Try more general keywords.
+    </li>
+  </ul>
+  
+  {% endif %}
+  <div class="row">
+
+    <!--all product-->
+    
+    <div id='product' class="col-lg-9 mx-auto mt-3">
+      <div class="row mx-auto">
+
+        {% for product in products %} 
+        <div class="card mx-auto mb-2" id="{{product.id}}" style="width: 15rem;background-color:#edf2f8;">
+            <img class="card-img-top" src="{{product.image.url}}" height="200" alt="ok">
+            <div class="card-body">
+              <h5 class="card-title">{{product.name}}</h5>
+           
+              <p class="card-text">{{product.price|currency}}</p>
+              
+              <form method="GET" action="/profil_prp" class="form-inline my-2 my-lg-0">
+                <input hidden type="text" name='iqre' id="iqre" value="{{product.id}}">
+                <input type="submit" class="float-right btn btn-block boarder
+                form-control" style="width: 15rem;background-color:blueviolet;" value="Click To View">
+              </form>
+
+            </div>
+            
+ 
+
+            <div class="card-footer p-0 no-gutters">
+              {% if product|is_in_cart:request.session.cart  %}
+              <div class="row no-gutters">
+                <form action="/#{{product.id}}" class="col-2" method="POST">
+                {% csrf_token %}
+                <input hidden type="text" name='remove' value="True">
+                <input type="submit" value="-" class=" btn btn-block btn-secondary">
+                <input hidden type="text" name='product' value="{{product.id}}">
+               
+              </form>
+              <div class="text-center col" style="background-color:skyblue;">Quantity={{product|quantity_count:request.session.cart}}</div>
+
+
+              <form action="/#{{product.id}}" class="col-2" method="POST">
+                {% csrf_token %}
+                <input hidden type="text" name='product' value="{{product.id}}">
+                <input type="submit" value="+" class=" btn btn-block btn-secondary">
+              </form>
+
+              </div>
+              {% else %}
+              <form action="/#{{product.id}}" method="POST" class="btn-block">
+                {% csrf_token %}
+                <input hidden type="text" name='product' value="{{product.id}}">
+                <input type="submit" class="float-right btn  boarder
+                form-control  btn-danger btn-md my-0 p" value="Add to Cart">
+              </form>
+              {% endif %}
+
+
+        </div>
+        </div>
+        {% endfor %}
+        
+        </div>
+    </div>
+  </div>
+</div>
+{% endblock body %}

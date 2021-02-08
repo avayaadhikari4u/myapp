@@ -1,0 +1,240 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Product Profile
+{% endblock title %}
+
+{% block head %}
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  body{
+    background: -webkit-linear-gradient(left, #3931af, white);
+    }
+    * {box-sizing: border-box;}
+
+.img-zoom-container {
+  position: relative;
+}
+
+.img-zoom-lens {
+  position: absolute;
+  border: 1px solid #d4d4d4;
+  /*set the size of the lens:*/
+  width: 100px;
+  height: 100px;
+}
+
+.img-zoom-result {
+  right: 50px;
+  border: 1px solid #d4d4d4;
+  /*set the size of the result div:*/
+  width: 350px;
+  height: 350px;
+}
+  </style>
+<script>
+function imageZoom(imgID, resultID) {
+  var img, lens, result, cx, cy;
+  img = document.getElementById(imgID);
+  result = document.getElementById(resultID);
+  /*create lens:*/
+  lens = document.createElement("DIV");
+  lens.setAttribute("class", "img-zoom-lens");
+  /*insert lens:*/
+  img.parentElement.insertBefore(lens, img);
+  /*calculate the ratio between result DIV and lens:*/
+  cx = result.offsetWidth / lens.offsetWidth;
+  cy = result.offsetHeight / lens.offsetHeight;
+  /*set background properties for the result DIV:*/
+  result.style.backgroundImage = "url('" + img.src + "')";
+  result.style.backgroundSize = (img.width * cx) + "px " + (img.height * cy) + "px";
+  /*execute a function when someone moves the cursor over the image, or the lens:*/
+  lens.addEventListener("mousemove", moveLens);
+  img.addEventListener("mousemove", moveLens);
+  /*and also for touch screens:*/
+  lens.addEventListener("touchmove", moveLens);
+  img.addEventListener("touchmove", moveLens);
+  function moveLens(e) {
+    var pos, x, y;
+    /*prevent any other actions that may occur when moving over the image:*/
+    e.preventDefault();
+    /*get the cursor's x and y positions:*/
+    pos = getCursorPos(e);
+    /*calculate the position of the lens:*/
+    x = pos.x - (lens.offsetWidth / 2);
+    y = pos.y - (lens.offsetHeight / 2);
+    /*prevent the lens from being positioned outside the image:*/
+    if (x > img.width - lens.offsetWidth) {x = img.width - lens.offsetWidth;}
+    if (x < 0) {x = 0;}
+    if (y > img.height - lens.offsetHeight) {y = img.height - lens.offsetHeight;}
+    if (y < 0) {y = 0;}
+    /*set the position of the lens:*/
+    lens.style.left = x + "px";
+    lens.style.top = y + "px";
+    /*display what the lens "sees":*/
+    result.style.backgroundPosition = "-" + (x * cx) + "px -" + (y * cy) + "px";
+  }
+  function getCursorPos(e) {
+    var a, x = 0, y = 0;
+    e = e || window.event;
+    /*get the x and y positions of the image:*/
+    a = img.getBoundingClientRect();
+    /*calculate the cursor's x and y coordinates, relative to the image:*/
+    x = e.pageX - a.left;
+    y = e.pageY - a.top;
+    /*consider any page scrolling:*/
+    x = x - window.pageXOffset;
+    y = y - window.pageYOffset;
+    return {x : x, y : y};
+  }
+}
+</script>
+{% endblock head %}
+
+
+{% block body %}
+
+{% load cartviewer %}
+{% load currency_filter %}
+<!--Main layout-->
+
+<div class="pt-1">
+  <div class="container dark-grey-text">
+
+    <!--Grid row-->
+      <div class="row wow fadeIn">
+        {% for product in products %}
+        <div class="list-group">
+          <a href="/" ><img class="border rounded" src="{{product.image.url}}" height="70" width="70" alt="ok"></a>
+          <a href="/"><img class="border rounded" src="{{product.image1.url}}" height="70" width="70" alt="ok"></a>
+          <a href="/"><img class="border rounded" src="{{product.image2.url}}" height="70" width="70" alt="ok"></a>
+         </div>
+          <div class="img-zoom-container" id={{product.id}}>
+            <img id="myimage" src="{{ product.image.url }}" width="350" height="350">
+            <div id="myresult" class="img-zoom-result"></div>
+          </div>
+
+          <script>
+          // Initiate zoom effect:
+          imageZoom("myimage", "myresult");
+          
+          </script>
+   
+
+
+          <!--Grid column-->
+
+          <!--Grid column-->
+          <div class="col-md-6 mb-4">
+
+              <!--Content-->
+              <div class="p-4 ml-5">
+
+                  <div class="ml-5">
+                    <span class="badge purple mr-1"style="font-size:35px">{{product.name}} </span>
+                    {% if product.Stock %}
+                    <td><small class="badge badge-success"> In Stock</small></td>
+                    {% else %}
+                    <td><small class="badge badge-success">Out Of Stock</small></td>
+                    {% endif %}
+                  </div>
+                  <hr>
+                  <small class="badge badge-primary ml-5"> {{product.brand.subcategory.category}} | {{product.brand.subcategory}} | {{product.brand}}</small>
+                <hr>
+                  <p class="ml-5" style="font-size:20px">Price-<span class="badge badge-primary" style="font-size:20px">{{product.price|currency}}</span></p>
+                  
+                  <h2  style="color: red;" > &nbsp; &nbsp; &nbsp;<u>Discount-{{product.discount|currency}}</u></h2>
+                    <hr>
+                  <p class="lead font-weight-bold ml-5">Description</p>
+
+                  <p class="ml-5">{{ product.description }}</p>
+
+                  <hr>
+
+                  <div class="card-footer p-0 no-gutters">
+                    
+                    {% if product.Stock %}
+                    {% if product|is_in_cart:request.session.cart  %}
+                    <div class="row no-gutters">
+                      <form action="/#{{product.id}}" class="col-2" method="POST">
+                      {% csrf_token %}
+                      <input hidden type="text" name='remove' value="True">
+                      <input type="submit" value="-" class=" btn btn-block btn-secondary">
+                      <input hidden type="text" name='product' value="{{product.id}}">
+                     
+                    </form>
+                    <div class="text-center col" style="background-color:skyblue;">Quantity={{product|quantity_count:request.session.cart}}</div>
+      
+      
+                    <form action="/#{{product.id}}" class="col-2" method="POST">
+                      {% csrf_token %}
+                      <input hidden type="text" name='product' value="{{product.id}}">
+                      <input type="submit" value="+" class=" btn btn-block btn-secondary">
+                    </form>
+                    
+
+                      
+                    </div>
+                    <hr>
+                      <form action="/#{{product.id}}" method="POST" class="btn-block">
+                      {% csrf_token %}
+                        <input hidden type="text" name='remove_all' value="True">
+                        <input type="submit" value="Remove From Cart" class=" btn btn-block btn-secondary">
+                        <input hidden type="text" name='product' value="{{product.id}}">
+                      </form>
+      
+                    
+                    {% else %}
+                    <form action="/#{{product.id}}" method="POST" class="btn-block">
+                      {% csrf_token %}
+                      <input hidden type="text" name='product' value="{{product.id}}">
+                      <input type="submit" class="float-right btn  boarder
+                      form-control  btn-primary btn-md my-0 p" value="Add to Cart">
+                    </form>
+                    <hr>
+                    <hr>
+                    <form action="/#{{product.id}}" method="POST" class="btn-block">
+                      {% csrf_token %}
+                      <input hidden type="text" name='product' value="{{product.id}}">
+                      <input type="submit" class="float-right btn  boarder
+                      form-control  btn-primary btn-md my-0 p" style="background-color: brown;" value="Buy Now">
+                    </form>
+                    {% endif %}
+                    
+
+                    {% endif %}
+
+
+      
+              </div>
+              </div>
+
+
+
+
+              </div>
+              <!--Content-->
+
+          </div>
+          <!--Grid column-->
+
+      </div>
+      <!--Grid row-->
+
+      {% endfor %}
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+      <hr>
+      
+
+  </div>
+</div>
+
+{% endblock body %}
+
